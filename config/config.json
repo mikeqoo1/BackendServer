@@ -1,0 +1,22 @@
+{
+    "BASIC": {
+        "timeZone":"Local",
+        "interval":60,
+        "serverPort":8080,
+        "secureServerPort":8081
+    },
+    "DB": {
+        "host":"127.0.0.1",
+        "port":3306,
+        "user":"root",
+        "password":"1234",
+        "database":"backend_server",
+        "MaxOpenConns":3000,
+        "MaxIdleConns":3000
+    },
+    "LS": {
+        "loadBalanceWebapiUrl":"http://127.0.0.1:11111/LsCmd",
+        "loadBalancePlatformID":7,
+        "loadBalanceAuthKey":"112233"
+    }
+}
