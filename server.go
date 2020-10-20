@@ -2,22 +2,41 @@ package main
 
 import (
 	mylib "BackendServer/mylib"
+	url "BackendServer/router"
 	"fmt"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
+
+//常用變數
+var err error
 
 func init() {
 	mylib.InitMyConfig()
 	mylib.MyLog()
+	mylib.InitDBpool()
 }
 
 func main() {
 	addr := fmt.Sprintf("%s:%d", "127.0.0.1", mylib.MyConfig.ServerPort)
+	router := gin.Default()
 
-	mylib.MyLogger.Debug("正在listen" + addr)
+	v1 := router.Group("/test")
+	{
+		v1.GET("/login", url.Login)
+		// v1.POST("/submit", submitEndpoint)
+		// v1.POST("/read", readEndpoint)
+	}
 
-	err := http.ListenAndServe(addr, nil)
+	// v2 := router.Group("/v2")
+	// {
+	// 	v2.POST("/login", loginEndpoint)
+	// 	v2.POST("/submit", submitEndpoint)
+	// 	v2.POST("/read", readEndpoint)
+	// }
+
+	err = router.Run(addr)
 	if err != nil {
-		mylib.MyLogger.Fatal("監聽失敗" + err.Error())
+		mylib.MyLogger.Error("BackendServer啟動失敗" + err.Error())
 	}
 }

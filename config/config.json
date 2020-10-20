@@ -6,17 +6,12 @@
         "secureServerPort":8081
     },
     "DB": {
-        "host":"127.0.0.1",
+        "host":"192.168.88.213",
         "port":3306,
-        "user":"root",
-        "password":"1234",
+        "user":"rdadmin",
+        "password":"1qaz2wsx",
         "database":"backend_server",
         "MaxOpenConns":3000,
         "MaxIdleConns":3000
-    },
-    "LS": {
-        "loadBalanceWebapiUrl":"http://127.0.0.1:11111/LsCmd",
-        "loadBalancePlatformID":7,
-        "loadBalanceAuthKey":"112233"
     }
 }
