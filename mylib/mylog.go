@@ -29,7 +29,7 @@ func MyLog() {
 		fmt.Println("Error 開啟 log 失敗", err.Error())
 	}
 
-	log.AddHook(newRotateHook("", dateStr, 31*24*time.Hour, time.Hour))
+	log.AddHook(newRotateHook("", dateStr, 31*24*time.Hour, 1*time.Hour))
 
 	// 為當前logrus例項設定訊息的輸出, 可以設定logrus例項的輸出到任意io.writer EX: os.Stdout
 	log.Out = logFile

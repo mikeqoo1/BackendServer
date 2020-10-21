@@ -55,12 +55,13 @@ func crosHandler() gin.HandlerFunc {
 func main() {
 	addr := fmt.Sprintf("%s:%d", "127.0.0.1", mylib.MyConfig.ServerPort)
 	router := gin.Default()
-
+	router.Use(crosHandler())
+	router.Use(url.CheckData())
 	t := router.Group("/test")
 	{
 		t.GET("/api", url.API)
 		t.POST("/api1", url.API1)
-		//t.POST("/api2", url.API2)
+		t.POST("/api2", url.API2)
 	}
 
 	// v2 := router.Group("/v2")
