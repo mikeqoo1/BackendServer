@@ -5,31 +5,18 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-//用來判斷是哪種資料 1代表raw data 0代表form-data
+//用來判斷是哪種資料 0代表raw data 1代表form-data
 var checkflag int
 
-//Admin 管理員
-type Admin struct {
-	Account string `json:"account"`
-	Status  string `json:"status"`
+//Userinfo 管理員
+type Userinfo struct {
+	Account  string `json:"account"`
+	Password string `json:"Password"`
 }
-
-// //Routerurl 存放URL的設定結構
-// type Routerurl struct {
-// 	URL路徑 string
-// 資料結構
-// }
-
-// //NewRouterURL new a Routerurl object
-// func NewRouterURL() *Routerurl {
-// 	routerURL := new(Routerurl)
-// 	return routerURL
-// }
 
 //CheckData 檢查資料 中間件, 未來可以當驗證的檢查
 func CheckData() gin.HandlerFunc {
@@ -48,63 +35,69 @@ func CheckData() gin.HandlerFunc {
 	}
 }
 
-//API api格式
-func API(c *gin.Context) {
+//List List的api func
+func List(c *gin.Context) {
 	c.JSON(http.StatusOK, "hello word")
 }
 
-//API1 api格式
-func API1(c *gin.Context) {
-	result, err := mylib.ConstDBpool.Exec("SQL語法")
-	if err != nil {
-		mylib.MyLogger.Error("API1 SQL 失敗" + err.Error())
-	}
-	mylib.MyLogger.Debug("result:", result)
-	mylib.MyLogger.Debug("user IP:", c.ClientIP())
-
-	c.JSON(http.StatusOK, "hello word")
-}
-
-//API2 api格式
-func API2(c *gin.Context) {
+//New New的api func
+func New(c *gin.Context) {
+	checkflag = 0
 	mylib.MyLogger.Debug("誰來新增: ", c.ClientIP())
-	stmt, err := mylib.ConstDBpool.Prepare("INSERT INTO Admin SET Account = ?, createtime = ?, status = ?")
+
+	stmt, err := mylib.ConstDBpool.Prepare("INSERT INTO `資料表` SET `欄位1` = ?, `欄位2` = ?")
 	if err != nil {
-		mylib.MyLogger.Error("API1 SQL 失敗", err.Error())
+		mylib.MyLogger.Error("New SQL 語法失敗", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "後台sql有誤",
+		})
+		return
 	}
 
-	var info Admin
+	var info Userinfo
 
-	//先用form-data解析
-	user := c.DefaultPostForm("account", "NULL")
-	info.Account = user
-	if user == "NULL" {
-		mylib.MyLogger.Warn("該筆訊息不是form-data")
+	//先用raw data解析
+	err = c.BindJSON(&info)
+	if err != nil {
 		checkflag = 1
-	} else {
-		status := c.DefaultPostForm("status", "0")
-		info.Status = status
+		mylib.MyLogger.Warn("該筆資訊是form-data")
 	}
 
 	if checkflag == 1 {
-		err = c.BindJSON(&info)
-		if err != nil {
-			mylib.MyLogger.Error("API1 BindJSON 失敗 ", err.Error())
+		user := c.DefaultPostForm("account", "NULL")
+		if user == "NULL" {
+			mylib.MyLogger.Error("請檢查格式或內容")
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "請檢查格式或內容",
+			})
+			return
 		}
-		mylib.MyLogger.Debug("info: ", info)
+		info.Account = user
 	}
 
-	_, err1 := stmt.Exec(info.Account, time.Now(), info.Status)
+	mylib.MyLogger.Debug("UserInfo=> ", info)
+
+	_, err1 := stmt.Exec(info.Account, info.Password)
+	//fmt.Println(i)
 	if err1 != nil {
-		mylib.MyLogger.Error("New Error:", err1.Error())
+		mylib.MyLogger.Error("Create new user Error:", err1.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err1.Error(),
 		})
 	} else {
-		mylib.MyLogger.Info("New success")
+		mylib.MyLogger.Info("Create new user success")
 		c.JSON(http.StatusOK, gin.H{
-			"message": "Create success",
+			"message": "Create new user success",
 		})
 	}
+}
 
+//Update Update的api func
+func Update(c *gin.Context) {
+	//參照上面範例
+}
+
+//Drop Drop的api func
+func Drop(c *gin.Context) {
+	//參照上面範例
 }

@@ -59,9 +59,10 @@ func main() {
 	router.Use(url.CheckData())
 	t := router.Group("/test")
 	{
-		t.GET("/api", url.API)
-		t.POST("/api1", url.API1)
-		t.POST("/api2", url.API2)
+		t.GET("/user", url.List)       //列出所有user
+		t.POST("/user", url.New)       //新建一個user
+		t.PUT("/user/ID", url.Update)  //更新某個指定user的信息（提供該user的全部信息）
+		t.DELETE("/user/ID", url.Drop) //刪除某個user
 	}
 
 	// v2 := router.Group("/v2")
