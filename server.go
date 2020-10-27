@@ -57,7 +57,14 @@ func main() {
 	router := gin.Default()
 	router.Use(crosHandler())
 	router.Use(url.CheckData())
-	t := router.Group("/test")
+
+	v1 := router.Group("/apis")
+	{
+		v1.POST("/register", url.Registeruser)
+		v1.POST("/login", url.Login)
+	}
+
+	t := router.Group("/apis/test")
 	{
 		t.GET("/user", url.List)       //列出所有user
 		t.POST("/user", url.New)       //新建一個user
