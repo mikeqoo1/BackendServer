@@ -38,13 +38,14 @@ func MyLog() {
 	formatter := &logrus.JSONFormatter{
 		// time格式
 		TimestampFormat: time.StampNano,
+		PrettyPrint:     true,
 	}
 
 	// // formatter := &logrus.TextFormatter{
 	// // 	// time格式
 	// // 	TimestampFormat: time.StampNano,
 	// // }
-
+	log.SetReportCaller(true) //輸出funcName line
 	log.SetFormatter(formatter)
 
 	//檔出終端機
