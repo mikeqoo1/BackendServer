@@ -9,7 +9,6 @@ type myConfigStruct struct {
 	TomeZone         string
 	Interval         int
 	ServerPort       int
-	SecureServerPort int
 
 	DBHost         string
 	DBPort         int
@@ -34,7 +33,6 @@ func InitMyConfig() {
 	MyConfig.TomeZone = viper.GetString("BASIC.timeZone")
 	MyConfig.Interval = viper.GetInt("BASIC.interval")
 	MyConfig.ServerPort = viper.GetInt("BASIC.serverPort")
-	MyConfig.SecureServerPort = viper.GetInt("BASIC.secureServerPort")
 
 	MyConfig.DBHost = viper.GetString("DB.host")
 	MyConfig.DBPort = viper.GetInt("DB.port")

@@ -207,8 +207,8 @@ func generateToken(c *gin.Context, user Userinfo) {
 
 	//產生User claims資料
 	claims := mylib.CustomClaims{
-		user.Account,
-		jwtgo.StandardClaims{
+		UserAccount: user.Account,
+		StandardClaims: jwtgo.StandardClaims{
 			NotBefore: int64(time.Now().Unix() - 1000), //簽名生效時間
 			ExpiresAt: int64(time.Now().Unix() + 3600), //簽名過期時間
 			Issuer:    "Seaflower",                     //簽名頒發者
