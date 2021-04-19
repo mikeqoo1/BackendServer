@@ -2,7 +2,22 @@
     "BASIC": {
         "timeZone":"Local",
         "interval":60,
-        "serverPort":8080
+        "host":"192.168.88.165",
+        "port":9191,
+        "rpchost":"0.0.0.0",
+        "rpcport":9111,
+        "logfile":"/backendserver/log",
+        "state":"USA",
+        "cert":"/data/Cert/joy-games.online/cert.pem",
+        "privkey":"/data/Cert/joy-games.online/privkey.pem"
+    },
+    "Tendasoft": {
+        "host":"http://192.168.99.30",
+        "port":8089
+    },
+    "GRPC": {
+        "host":"192.168.99.30",
+        "port":9991
     },
     "DB": {
         "host":"127.0.0.1",
@@ -10,7 +25,10 @@
         "user":"root",
         "password":"password",
         "database":"testDB",
-        "MaxOpenConns":3000,
-        "MaxIdleConns":3000
+        "MaxOpenConns":1024,
+        "MaxIdleConns":1024
+    },
+    "JoyGame": {
+        "profit":90.00
     }
 }

@@ -7,8 +7,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var err error
-
 //ConstDBpool 共用資料庫連線
 var ConstDBpool *sql.DB
 
@@ -66,6 +64,7 @@ func FromRows(rows *sql.Rows) (DataTable, error) {
 
 //InitDBpool 建立一個共用的DB物件給大家用
 func InitDBpool() {
+	var err error
 	var connectionString = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?allowNativePasswords=true",
 		MyConfig.DBUser, MyConfig.DBPassWord, MyConfig.DBHost, MyConfig.DBPort, MyConfig.DBDataBase)
 	ConstDBpool, err = sql.Open("mysql", connectionString)

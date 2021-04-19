@@ -1,21 +1,56 @@
 package main
 
 import (
+	md "BackendServer/middleware"
 	mylib "BackendServer/mylib"
 	url "BackendServer/router"
+
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/unrolled/secure"
 )
 
 //常用變數
-var err error
+var (
+	//IsHttps https版本
+	IsHttps string
+	//IsJC JC版本
+	IsJC string
+	//IsDebug debug訊息
+	IsDebug    string
+	configpath string
+)
 
 func init() {
-	mylib.InitMyConfig()
+	if IsJC == "TURE" {
+		configpath = "/data/joygame/config"
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		configpath = "/joygame/backendserver/config"
+	}
 	mylib.MyLog()
 	mylib.InitDBpool()
+}
+
+//TLSHandler http to https
+func TLSHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware := secure.New(secure.Options{
+			SSLRedirect: true,
+			SSLHost:     "0.0.0.0:8080",
+		})
+		err := secureMiddleware.Process(c.Writer, c.Request)
+
+		// If there was an error, do not continue.
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		c.Next()
+	}
 }
 
 //crosHandler 處理跨域問題
@@ -53,15 +88,50 @@ func crosHandler() gin.HandlerFunc {
 }
 
 func main() {
-	addr := fmt.Sprintf("%s:%d", "127.0.0.1", mylib.MyConfig.ServerPort)
+	var err error
+	addr := fmt.Sprintf("%s:%d", mylib.MyConfig.Host, mylib.MyConfig.Port)
 	router := gin.Default()
 	router.Use(crosHandler())
+	if IsJC == "TURE" {
+		router.Use(TLSHandler())
+	}
 	router.Use(url.CheckData())
 
-	v1 := router.Group("/apis")
+	router.GET("/develop/check", url.CheckToken)
+
+	backend := router.Group("/")
+	backend.Use(md.JWTAuth())
+	{
+
+	}
+
+	pos := router.Group("/pos")
+	pos.Use(md.JWTAuth())
 	{
 		v1.POST("/register", url.Registeruser)
 		v1.POST("/login", url.Login)
+	}
+
+	group := router.Group("/group")
+	group.Use(md.JWTAuth())
+	{
+		group.GET("/", url.List)    //列出grouplist
+		group.POST("/", url.New)    //新建group
+		group.PUT("/", url.Update)  //更新group
+		group.DELETE("/", url.Drop) //刪除group
+
+		group.POST("/dd", url.New)   //新建IGS版本的分潤
+		group.PUT("/dd", url.Update) //更新IGS版本的分潤
+
+	}
+
+	store := router.Group("/store")
+	store.Use(md.JWTAuth())
+	{
+		store.GET("/", url.List)    //列出store
+		store.POST("/", url.New)    //新建store
+		store.PUT("/", url.Update)  //更新store
+		store.DELETE("/", url.Drop) //刪除store
 	}
 
 	t := router.Group("/apis/test")
@@ -71,13 +141,6 @@ func main() {
 		t.PUT("/user/ID", url.Update)  //更新某個指定user的信息（提供該user的全部信息）
 		t.DELETE("/user/ID", url.Drop) //刪除某個user
 	}
-
-	// v2 := router.Group("/v2")
-	// {
-	// 	v2.POST("/login", loginEndpoint)
-	// 	v2.POST("/submit", submitEndpoint)
-	// 	v2.POST("/read", readEndpoint)
-	// }
 
 	err = router.Run(addr)
 	if err != nil {

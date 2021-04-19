@@ -1,4 +1,4 @@
-package mylib
+package middleware
 
 import (
 	"fmt"
