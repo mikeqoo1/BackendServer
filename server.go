@@ -9,9 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//常用變數
-var err error
-
 func init() {
 	mylib.InitMyConfig()
 	mylib.MyLog()
@@ -79,7 +76,7 @@ func main() {
 	// 	v2.POST("/read", readEndpoint)
 	// }
 
-	err = router.Run(addr)
+	err := router.Run(addr)
 	if err != nil {
 		mylib.MyLogger.Error("BackendServer啟動失敗" + err.Error())
 	}
